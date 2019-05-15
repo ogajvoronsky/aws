@@ -1,0 +1,84 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  description vpc
+
+# Metadata:
+#   template metadata
+
+Parameters:
+  cidr:
+    Type: String
+    # Default: '10.0.0.0/16'
+    
+
+# Mappings:
+#   set of mappings
+
+# Conditions:
+#   set of conditions
+
+# Transform:
+#   set of transforms
+
+Resources:
+  myVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref cidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+       - Key: Name
+         Value: MyVPCName
+       - Key: mykey
+         Value: mykeyvalue
+  Private1:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1a
+      CidrBlock: 10.0.1.0/24
+      Tags: 
+        - Key: Name
+          Value: priv1
+      VpcId: !Ref myVPC
+
+  Private2:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.2.0/24
+      Tags: 
+        - Key: Name
+          Value: priv2
+      VpcId: !Ref myVPC
+  
+  Public1:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1a
+      CidrBlock: 10.0.10.0/24
+      Tags: 
+        - Key: Name
+          Value: publ1
+      VpcId: !Ref myVPC
+  
+  Public2:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.20.0/24
+      Tags: 
+        - Key: Name
+          Value: publ2
+      VpcId: !Ref myVPC
+
+Outputs:
+#   set of outputs
+  myVPCid:
+    Description: Information about the value
+    Value: !Ref myVPC
+    Export:
+      Name: vpc1-id
