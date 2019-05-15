@@ -4,8 +4,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description:
   description vpc
 
-# Metadata:
-#   template metadata
 
 Parameters:
   cidr:
@@ -35,7 +33,33 @@ Resources:
          Value: MyVPCName
        - Key: mykey
          Value: mykeyvalue
-    
+  myInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: myIG
+  AttachmentInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref myInternetGateway
+      VpcId: !Ref myVPC
+  PublicRT:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key: Name
+          Value: public
+      VpcId: !Ref myVPC
+
+  PrivateRT:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key: Name
+          Value: private
+      VpcId: !Ref myVPC
+
   Private1:  
     Type: AWS::EC2::Subnet
     Properties: 
@@ -45,6 +69,11 @@ Resources:
         - Key: Name
           Value: priv1
       VpcId: !Ref myVPC
+  RTAssignPrivate1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref PrivateRT
+      SubnetId: !Ref Private1
 
   Private2:  
     Type: AWS::EC2::Subnet
@@ -55,6 +84,11 @@ Resources:
         - Key: Name
           Value: priv2
       VpcId: !Ref myVPC
+  RTAssignPrivate2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref PrivateRT
+      SubnetId: !Ref Private2
   
   Public1:  
     Type: AWS::EC2::Subnet
@@ -65,7 +99,12 @@ Resources:
         - Key: Name
           Value: publ1
       VpcId: !Ref myVPC
-  
+  RTAssignPublic1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref PublicRT
+      SubnetId: !Ref Public1
+
   Public2:  
     Type: AWS::EC2::Subnet
     Properties: 
@@ -74,21 +113,24 @@ Resources:
       Tags: 
         - Key: Name
           Value: publ2
-      VpcId: !Ref myVPC
-
-  myInternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-      - Key: Name
-        Value: myIG
-  
-  AttachmentInternetGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
+      VpcId: !Ref myVPC    
+  RTAssignPublic2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties: 
-      InternetGatewayId: !Ref myInternetGateway
-      VpcId: !Ref myVPC
-      # VpnGatewayId: String
+      RouteTableId: !Ref PublicRT
+      SubnetId: !Ref Public2
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachmentInternetGateway
+    Properties: 
+      RouteTableId: !Ref PublicRT
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref myInternetGateway
+      
+
+
+
 
 Outputs:
 #   set of outputs

@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+# Parameters:
+
+
+Resources:
+  myEC2:
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      ImageId: "ami-0c6b1d09930fac512"
+      KeyName: "aws-rio-key"
+      SubnetId: subnet-05ee6f52d1276ed31
+      InstanceType: t2.micro
+      Tags:
+       - Key: Name
+         Value: nat.example.com
+      # BlockDeviceMappings: 
+      # - DeviceName: "/dev/sdm"
+      #   Ebs: 
+      #     VolumeType: "io1"
+      #     Iops: "200"
+      #     DeleteOnTermination: "false"
+      #     VolumeSize: "20"
+      # - DeviceName: "/dev/sdk"
+      #   NoDevice: {}
+
+  
+# Outputs:
